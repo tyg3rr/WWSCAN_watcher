@@ -92,7 +92,7 @@ This tutorial will outline the steps needed to schedule WWSCAN_watcher to run ev
 
 - Open Task Scheduler
 
-![j46swlsisk891.webp](attachment:j46swlsisk891.webp)
+![Task Scheduler main window](images/1.png)
 
 - Create task on the upper right.
 
@@ -100,15 +100,15 @@ This tutorial will outline the steps needed to schedule WWSCAN_watcher to run ev
 
 - Add a description (optional)
 
-![image.png](attachment:image.png)
+![image.png](images/2.png)
 
 - Add trigger to begin the task on a schedule; input your desired schedule
 
-![image-2.png](attachment:image-2.png)
+![image-2.png](images/3.png)
 
 - Add action
 
-![image-3.png](attachment:image-3.png)
+![image-3.png](images/4.png)
 
   - "Program/script": paste your computer's path to python. For me, that's `C:\Users\jensenl5\AppData\Local\Programs\Python\Python312\pythonw.exe`. Note that it's important to include the 'w' in "pythonw.exe".
 
@@ -118,10 +118,11 @@ This tutorial will outline the steps needed to schedule WWSCAN_watcher to run ev
 
 - You're done! You can run the task manually by clicking "run" and you can check when's the last time the code ran by clicking "Refresh"
 
-![image-4.png](attachment:image-4.png)
+![image-4.png](images/5.png)
 
 ---
 ## Author
 
 Prepared by: Lillian Jensen
+
 Date started: 06/13/2025
