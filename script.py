@@ -40,19 +40,41 @@ import os
 
 # Define the folder path where local data files are stored
 username = "jensenl5"
-folder_path = f"C:\\Users\\{username}\\Documents\\WWSCAN_watcher\\data\\"
+folder_path = f"C:\\Users\\{username}\\Documents\\measles\\WWSCAN_watcher\\data\\"
 files_path = os.path.join(folder_path, '*')
 
 # Retrieve all files in the folder and sort them by creation time
 files = sorted(glob.iglob(files_path), key=os.path.getctime)
 
 # Load the most recent local data file and filter for measles detections
-most_recent_measles_data = pd.read_csv(files[-1])
-most_recent_measles_data = most_recent_measles_data.loc[most_recent_measles_data['MeV_gc_g_dry_weight'] > 0]
-most_recent_measles_data['Collection_Date'] = pd.to_datetime(most_recent_measles_data['Collection_Date'])
+if len(files) == 0:
+  # If no local data files exist, create an empty DataFrame with the expected columns
+  most_recent_measles_data = pd.DataFrame(
+    columns=[
+      'City',
+      'Site_Name',
+      'Collection_Date',
+      'MeV_gc_g_dry_weight',
+      'MeV_gc_g_dry_weight_UCI',
+      'MeV_gc_g_dry_weight_LCI'
+    ]
+  )
+else:
+  # If local data files exist, load the most recent one
+  most_recent_measles_data = pd.read_csv(files[-1])
+
+  # Filter for rows with measles detections (MeV_gc_g_dry_weight > 0)
+  most_recent_measles_data = most_recent_measles_data.loc[
+    most_recent_measles_data['MeV_gc_g_dry_weight'] > 0
+  ]
+
+  # Ensure 'Collection_Date' is in datetime format
+  most_recent_measles_data['Collection_Date'] = pd.to_datetime(
+    most_recent_measles_data['Collection_Date']
+  )
 
 # Fetch the latest data from WWSCAN's API
-api = "https://storage.googleapis.com/wastewater-dev-data/scan.csv"
+api = "input WastewaterSCAN API url here." # Reach out to WastewaterSCAN to ask for the url if needed
 res = requests.get(api)
 
 if res.status_code == 200:
@@ -63,7 +85,7 @@ else:
   print("Failed to fetch data")
 
 # Filter the data for Michigan-specific entries
-updated_api_data = updated_api_data.loc[updated_api_data['State'] == 'Michigan']
+updated_api_data = updated_api_data.loc[updated_api_data['State'] == 'Michigan'] # Change to your state of interest
 updated_api_data = updated_api_data[[
                                     'City',
                                     'Site_Name',

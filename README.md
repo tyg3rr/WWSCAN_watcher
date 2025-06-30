@@ -1,8 +1,49 @@
-# WWSCAN_watcher README
+# WastewaterSCAN Watcher
 
-This project automates the process of fetching, processing, and monitoring Measles detections from the WWSCAN (Wastewater Surveillance) API for Michigan. It identifies new detections and sends email alerts when new cases are found.
+## Overview
 
-# script.py
+This script automates the process of monitoring new WastewaterSCAN (WWSCAN) measles detections in Michigan. It fetches the latest data, compares it to previously saved WWSCAN data, identifies new detections, saves results, and sends an email alert if new detections are found. 
+
+## Tools Needed
+
+- Python 3.x
+- Windows PowerShell
+- Windows Task Scheduler
+
+## Step-by-Step Breakdown
+
+### 1. Load the Most Recent Locally-Saved WWSCAN Data
+
+The script looks for existing data files in the folder and sorts them by creation time. If no files are found, it creates an empty table with the expected columns. If files exist, it loads the most recent one and filters it to only include rows where measles was detected (MeV_gc_g_dry_weight > 0).
+
+### 2. Fetch the Latest Michigan Data from the WWSCAN API
+
+The script downloads the latest Michigan measles data from the WWSCAN API. The filtered Michigan data is saved to a file called latest_WWSCAN_data.csv for human review.
+
+### 3. Identify New Measles Detections
+
+The script filters the latest data to only include rows where measles was detected. It compares these new detections to the previous local data to find any new cases that weren’t already recorded. This is done using a merge operation, keeping only rows that are present in the new data but not in the old data.
+
+### 4. Alert if New Detections Are Found
+
+If any new detections are found:
+- They are saved to a dated file in the detections folder.
+- A PowerShell script (email_alert.ps1) is run to send an email alert.
+
+### 5. Update Locally-Saved WWSCAN Data File
+
+The script saves the latest Michigan data to a new file in the data folder, using the most recent sample date in the filename. To save disk space, the script keeps only the three most recent data files in the folder and deletes the rest.
+
+## Notes for Other Jurisdictions:
+
+- API URL: You must fill in the WWSCAN api url for the script to work.
+- Folder Existence: Make sure the data and detections folders exist, or add code to create them if missing.
+- Email Script: The PowerShell script for sending emails must be present and configured.
+
+--- 
+---
+
+# script.py README
 
 ## Features
 
@@ -12,12 +53,6 @@ This project automates the process of fetching, processing, and monitoring Measl
 - **Saves** new detections and updates local data files.
 - **Sends email alerts** via a PowerShell script if new detections are found.
 - **Manages local storage** by keeping only the three most recent data files.
-
-## Tools Needed
-
-- Python 3.x
-- Windows PowerShell
-- Windows Task Scheduler
 
 ## File Outputs
 
@@ -30,12 +65,15 @@ This project automates the process of fetching, processing, and monitoring Measl
 - pandas
 - requests
 
-## Usage
+## Requirements
 
 1. Place the script in your working directory.
 2. Ensure the `data` and `detections` folders exist.
 3. Update the `username` variable in the script to match your Windows username.
-4. Ensure `email_alert.ps1` (PowerShell script for email alerts) is present in the same directory.
+4. Update the `folder_path` variable to match your path.
+5. Input your WWSCAN API url in the `api` variable.
+6. Replace all state references from "Michigan" to your state. 
+7. Ensure `email_alert.ps1` (PowerShell script for email alerts) is present.
 
 ## Notes
 
@@ -44,25 +82,24 @@ This project automates the process of fetching, processing, and monitoring Measl
 - Make sure you have the necessary permissions to run PowerShell scripts.
 
 ---
+---
 
-# email_alert.ps1
+# email_alert.ps1 README
 
-This PowerShell script (`email_alert.ps1`) is designed to send automated email alerts when new Measles (MeV) detections are found in Michigan.
+This PowerShell script (`email_alert.ps1`) is designed to send automated email alerts when new measles detections are found in Michigan.
 
 ## Features
 
-- Sends an email alert to multiple recipients, including email-to-SMS gateways for text notifications.
+- Sends an email alert to multiple recipients.
 - Attaches a CSV file containing detection details, with the filename based on the current date.
 - Customizable sender, recipients, subject, and body.
 - Uses the `Send-MailMessage` cmdlet and a specified SMTP server.
 
 ## Requirements 
 
-1. **Configure the script as needed:**
-  - Update the `$from`, `$to`, `$smtpServer`, and file paths if necessary.
-
-3. **Attachment:**
-  - The script expects a CSV file named with today's date (e.g., `20240613.csv`) in the `WWSCAN_watcher\new_detects\` directory.
+1. Edit the directory portion of the `attachmentPath` parameter. 
+2. Configure the `$from`, `$to`, and `$smtpServer` parameters.
+3. The script expects a CSV file named with today's date (e.g., `20240613.csv`) in the `WWSCAN_watcher\new_detects\` directory.
 
 ## Parameters
 
@@ -74,19 +111,10 @@ This PowerShell script (`email_alert.ps1`) is designed to send automated email a
 - **$body**: Email body content.
 - **$smtpServer**: SMTP server for sending the email (contact your health department IT for the server for your health department)
 
-## Notes
-
-- This script is intended for use in a testing environment. The alert system may not be fully accurate.
-- Ensure the SMTP server allows relaying from your machine.
-- The script requires PowerShell and appropriate permissions to send emails.
-
-## Disclaimer
-
-This automated alert system is still being tested. Please verify all data manually.
-
+---
 ---
 
-# Task Scheduler
+# Task Scheduler README
 
 This tutorial will outline the steps needed to schedule WWSCAN_watcher to run every hour. Windows Task Scheduler is a built-in tool that allows users to automate tasks on their Windows machine. To create the WWSCAN_watcher task, take the following steps:
 
@@ -123,6 +151,7 @@ This tutorial will outline the steps needed to schedule WWSCAN_watcher to run ev
 ---
 ## Author
 
-Prepared by: Lillian Jensen
-
-Date started: 06/13/2025
+    Lillian Jensen, MPH
+    jensenl5@michigan.gov
+    CSTE Applied Epidemiology Fellow
+    Michigan Department of Health and Human Services
